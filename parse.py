@@ -14,7 +14,10 @@ def parse(gz_path):
     refs = {}
     browsers = {}
     oses = {}
-    skips = ["subreply.com", "dubfi.com", "sublevel.net", "artificialfeed.com"]
+    skips = [
+        "subreply.com", "dubfi.com", "sublevel.net",
+        "artificialfeed.com", "unfeeder.com", "radfi.com"
+    ]
 
     with gzip.open(gz_path, "rt") as f:
         for line in tqdm(f):
@@ -30,7 +33,12 @@ def parse(gz_path):
                     oses[ua_parsed.os.family] += 1
                 else:
                     oses[ua_parsed.os.family] = 1
-            ref = log["Referer"][1:-1]
+            ref = log["Referer"][1:-1].lower()
+            ref = ref.replace("://www.", "")
+            ref = ref.replace("https://", "")
+            ref = ref.replace("http://", "")
+            if ref.endswith('/'):
+                ref = ref[:-1]
             if ref != "-" and not any(s in ref for s in skips):
                 if ref in refs:
                     refs[ref] += 1
