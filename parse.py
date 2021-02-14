@@ -1,8 +1,8 @@
 import gzip
 import user_agents as ua
+from urllib.parse import urlparse
 from fire import Fire
 from tqdm import tqdm
-
 from clfparser import CLFParser
 
 
@@ -34,11 +34,11 @@ def parse(gz_path):
                 else:
                     oses[ua_parsed.os.family] = 1
             ref = log["Referer"][1:-1].lower()
-            ref = ref.replace("://www.", "")
-            ref = ref.replace("https://", "")
-            ref = ref.replace("http://", "")
-            if ref.endswith('/'):
-                ref = ref[:-1]
+            ref = ref.replace("://www.", "://")
+            p = urlparse(ref)
+            if p.path.endswith('/'):
+                p = p._replace(path=p.path[:-1])
+            ref = f"{p.netloc}{p.path}"
             if ref != "-" and not any(s in ref for s in skips):
                 if ref in refs:
                     refs[ref] += 1
