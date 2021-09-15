@@ -51,15 +51,15 @@ def parse(gz_path):
 
     print("--- OS")
     for k, v in oses.items():
-        print(k, v)
+        print(v, k)
 
     print("\n--- Browser")
     for k, v in browsers.items():
-        print(k, v)
+        print(v, k)
 
     print("\n--- Referer")
     for k, v in refs.items():
-        print(k, v)
+        print(v, k)
 
 
 if __name__ == "__main__":
