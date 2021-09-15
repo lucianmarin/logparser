@@ -1,9 +1,10 @@
 import gzip
-import user_agents as ua
 from urllib.parse import urlparse
+
+import user_agents as ua
+from clfparser import CLFParser
 from fire import Fire
 from tqdm import tqdm
-from clfparser import CLFParser
 
 SKIP_REFS = ["subreply.com", "unfeeder.com"]
 
