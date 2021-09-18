@@ -16,6 +16,11 @@ Install and update PIP packages.
 pip install -U -r requirements.txt
 ```
 
+## Speed
+
+- logparser 24,249/s 
+- GoAccess 6,234/s
+
 ## Output
 
 Output for [Subreply](https://subreply.com/) for a day in Sep, 2021:
