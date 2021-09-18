@@ -1,37 +1,32 @@
 import gzip
+from collections import defaultdict
 from urllib.parse import urlparse
 
-import user_agents as ua
 from clfparser import CLFParser
 from fire import Fire
 from tqdm import tqdm
+from user_agents import parse as uaparse
 
 SKIP_REFS = ["subreply.com", "unfeeder.com"]
 
 
-def reverse(d):
+def order(d):
     return {k: v for k, v in sorted(d.items(), key=lambda item: item[1])}
 
 
 def parse(gz_path):
-    refs = {}
-    browsers = {}
-    oses = {}
+    refs = defaultdict(int)
+    browsers = defaultdict(int)
+    oses = defaultdict(int)
 
-    with gzip.open(gz_path, "rt") as f:
-        for line in tqdm(f):
+    with gzip.open(gz_path, "rt") as file:
+        for line in tqdm(file):
             log = CLFParser.logDict(line)
             ua_str = log["Useragent"][1:-1]
-            ua_parsed = ua.parse(ua_str)
+            ua_parsed = uaparse(ua_str)
             if not ua_parsed.is_bot:
-                if ua_parsed.browser.family in browsers:
-                    browsers[ua_parsed.browser.family] += 1
-                else:
-                    browsers[ua_parsed.browser.family] = 1
-                if ua_parsed.os.family in oses:
-                    oses[ua_parsed.os.family] += 1
-                else:
-                    oses[ua_parsed.os.family] = 1
+                browsers[ua_parsed.browser.family] += 1
+                oses[ua_parsed.os.family] += 1
             ref = log["Referer"][1:-1].lower()
             ref = ref.replace("://www.", "://")
             p = urlparse(ref)
@@ -39,14 +34,11 @@ def parse(gz_path):
                 p = p._replace(path=p.path[:-1])
             ref = f"{p.netloc}{p.path}"
             if ref != "-" and not any(s in ref for s in SKIP_REFS):
-                if ref in refs:
-                    refs[ref] += 1
-                else:
-                    refs[ref] = 1
+                refs[ref] += 1
 
-    refs = reverse(refs)
-    browsers = reverse(browsers)
-    oses = reverse(oses)
+    refs = order(refs)
+    browsers = order(browsers)
+    oses = order(oses)
 
     print("--- OS")
     for k, v in oses.items():
