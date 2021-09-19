@@ -38,7 +38,7 @@ def parse(gz_path):
             if ref != "-" and not any(s in ref for s in SKIP_REFS):
                 refs[ref].add(ip)
 
-    print('---- IP')
+    print('----- IP')
     for k, v in sorted(ips.items()):
         print(str(len(v)).rjust(5), k)
 
