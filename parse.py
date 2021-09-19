@@ -22,11 +22,13 @@ def parse(gz_path):
             ip = log['h']
             day = log['time'].strftime('%Y-%m-%d %a')
             ips[day].add(ip)
+
             ua_str = log["Useragent"][1:-1]
             ua_parsed = uaparse(ua_str)
             if not ua_parsed.is_bot:
                 browsers[ua_parsed.browser.family].add(ip)
                 oses[ua_parsed.os.family].add(ip)
+
             ref = log["Referer"][1:-1].lower()
             ref = ref.replace("://www.", "://")
             p = urlparse(ref)
