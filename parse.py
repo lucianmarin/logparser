@@ -10,23 +10,23 @@ from user_agents import parse as uaparse
 SKIP_REFS = ["subreply.com", "unfeeder.com"]
 
 
-def order(d):
-    return {k: v for k, v in sorted(d.items(), key=lambda item: item[1])}
-
-
 def parse(gz_path):
-    refs = defaultdict(int)
-    browsers = defaultdict(int)
-    oses = defaultdict(int)
+    ips = defaultdict(set)
+    browsers = defaultdict(set)
+    oses = defaultdict(set)
+    refs = defaultdict(set)
 
     with gzip.open(gz_path, "rt") as file:
         for line in tqdm(file):
             log = CLFParser.logDict(line)
+            ip = log['h']
+            day = log['time'].strftime('%Y-%m-%d %a')
+            ips[day].add(ip)
             ua_str = log["Useragent"][1:-1]
             ua_parsed = uaparse(ua_str)
             if not ua_parsed.is_bot:
-                browsers[ua_parsed.browser.family] += 1
-                oses[ua_parsed.os.family] += 1
+                browsers[ua_parsed.browser.family].add(ip)
+                oses[ua_parsed.os.family].add(ip)
             ref = log["Referer"][1:-1].lower()
             ref = ref.replace("://www.", "://")
             p = urlparse(ref)
@@ -34,23 +34,23 @@ def parse(gz_path):
                 p = p._replace(path=p.path[:-1])
             ref = f"{p.netloc}{p.path}"
             if ref != "-" and not any(s in ref for s in SKIP_REFS):
-                refs[ref] += 1
+                refs[ref].add(ip)
 
-    refs = order(refs)
-    browsers = order(browsers)
-    oses = order(oses)
+    print('---- IP')
+    for k, v in sorted(ips.items()):
+        print(str(len(v)).rjust(5), k)
 
-    print("--- OS")
-    for k, v in oses.items():
-        print(v, k)
+    print('\n----- OS')
+    for k, v in sorted(oses.items(), key=lambda item: len(item[1])):
+        print(str(len(v)).rjust(5), k)
 
-    print("\n--- Browser")
-    for k, v in browsers.items():
-        print(v, k)
+    print('\n----- Browser')
+    for k, v in sorted(browsers.items(), key=lambda item: len(item[1])):
+        print(str(len(v)).rjust(5), k)
 
-    print("\n--- Referer")
-    for k, v in refs.items():
-        print(v, k)
+    print('\n----- Referer')
+    for k, v in sorted(refs.items(), key=lambda item: len(item[1])):
+        print(str(len(v)).rjust(5), k)
 
 
 if __name__ == "__main__":
