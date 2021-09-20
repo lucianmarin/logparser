@@ -4,7 +4,7 @@ Command line parser for common log format (Nginx default).
 
 ## Usage
 
-It counts most important data: refferers, operating systems and browsers.
+It counts most important data: referrers, operating systems, browsers and daily unique visitors (IPs).
 
 ```shell
 # Console output
