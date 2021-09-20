@@ -52,10 +52,10 @@ TEMPLATE = """<!doctype html>
         {% endfor %}
     </div>
     <div class="section">
-        <h3>Operating Systems<sup>{{ oses | length }}</sup></h3>
-        {% for os, ips in oses | reverse %}
+        <h3>Operating Systems<sup>{{ systems | length }}</sup></h3>
+        {% for system, ips in systems | reverse %}
             <p class="{{ loop.cycle('odd', 'even') }}">
-                <span>{{ ips | length }}</span> {{ os }}
+                <span>{{ ips | length }}</span> {{ system }}
             </p>
         {% endfor %}
     </div>
