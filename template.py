@@ -18,9 +18,10 @@ TEMPLATE = """<!doctype html>
         .section {
             margin: 0 auto;
             max-width: 480px;
+            padding: 0 10px;
             padding-top: 10px;
         }
-        .section h3 { margin-left: 10px; }
+        .section:last-child { padding-bottom: 20px; }
         .section p {
             overflow: hidden;
             text-overflow: ellipsis;
@@ -32,7 +33,7 @@ TEMPLATE = """<!doctype html>
             text-align: right;
             width: 20%;
         }
-        .section .even { background-color: whitesmoke; }
+        .section .even { background-color: whitesmoke; border-radius: 5px; }
     </style>
 </head>
 <body>
