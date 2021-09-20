@@ -7,7 +7,11 @@ Command line parser for common log format (Nginx default).
 It counts most important data: refferers, operating systems and browsers.
 
 ```shell
+# Console output
 python parse.py sitename.log.gz
+
+# HTML output
+python parse.py sitename.log.gz --html ~/sitename/logs.html
 ```
 
 Install and update PIP packages.
