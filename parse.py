@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 
 from clfparser import CLFParser
 from fire import Fire
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, DictLoader
 from tqdm import tqdm
 from user_agents import parse as uaparse
 
@@ -13,11 +13,12 @@ SKIP_REFS = ["subreply.com", "unfeeder.com"]
 
 def generate_html(days, browsers, oses, refs, html):
     print('Generating HTML...', html)
-    env = Environment(loader=FileSystemLoader("templates"))
-    template = env.get_template('basic.html')
+    with open(html) as file:
+        template = file.read()
+    env = Environment(loader=DictLoader({'template.html': template}))
+    template = env.get_template('template.html')
     with open(html, 'w') as file:
         output = template.render(
-            title=html,
             days=sorted(days.items()),
             oses=sorted(oses.items(), key=lambda item: len(item[1])),
             browsers=sorted(browsers.items(), key=lambda item: len(item[1])),
