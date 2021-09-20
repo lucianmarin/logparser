@@ -1,3 +1,6 @@
+.DS_Store
+__pycache__
+.pytest_cache
 *.log.gz
 default.html
 index.html

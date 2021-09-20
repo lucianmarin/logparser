@@ -1,4 +1,4 @@
-<!doctype html>
+TEMPLATE = """<!doctype html>
 <html>
 <head>
     <title>Logparser</title>
@@ -57,4 +57,4 @@
         {%- endfor %}
     </div>
 </body>
-</html>
+</html>"""

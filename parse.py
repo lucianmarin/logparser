@@ -8,14 +8,14 @@ from jinja2 import Environment, DictLoader
 from tqdm import tqdm
 from user_agents import parse as uaparse
 
+from template import TEMPLATE
+
 SKIP_REFS = ["subreply.com", "unfeeder.com"]
 
 
 def generate_html(days, browsers, oses, refs, html):
     print('Generating HTML...', html)
-    with open(html) as file:
-        template = file.read()
-    env = Environment(loader=DictLoader({'template.html': template}))
+    env = Environment(loader=DictLoader({'template.html': TEMPLATE}))
     template = env.get_template('template.html')
     with open(html, 'w') as file:
         output = template.render(
