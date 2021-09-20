@@ -7,7 +7,7 @@ TEMPLATE = """<!doctype html>
     <style>
         * { margin: 0; padding: 0; }
         body {
-            font-family: Tahoma, Droid Sans, Roboto, Oxygen, Ubuntu,
+            font-family: Tahoma, Noto Sans, Roboto, Oxygen, Ubuntu,
                          Cantarell, sans-serif;
             font-size: 13px;
             line-height: 20px;
