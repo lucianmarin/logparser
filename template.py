@@ -7,9 +7,8 @@ TEMPLATE = """<!doctype html>
     <style>
         * { margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
-                Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
-                'Helvetica Neue', sans-serif;
+            font-family: Tahoma, Droid Sans, Roboto, Oxygen, Ubuntu,
+                         Cantarell, sans-serif;
             font-size: 13px;
             line-height: 20px;
         }
