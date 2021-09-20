@@ -51,7 +51,7 @@ def parse(gz_path, html=None):
         for line in tqdm(file, unit=""):
             log = CLFParser.logDict(line)
             ip = log['h']
-            day = log['time'].strftime('%Y-%m-%d %a')
+            day = log['time'].strftime('%Y-%m-%d %A')
             days[day].add(ip)
             ua_str = log["Useragent"][1:-1]
             ua_parsed = uaparse(ua_str)
