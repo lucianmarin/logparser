@@ -60,6 +60,14 @@ TEMPLATE = """<!doctype html>
         {% endfor %}
     </div>
     <div class="section">
+        <h3>Devices<sup>{{ devices | length }}</sup></h3>
+        {% for device, ips in devices | reverse %}
+            <p class="{{ loop.cycle('odd', 'even') }}">
+                <span>{{ ips | length }}</span> {{ device }}
+            </p>
+        {% endfor %}
+    </div>
+    <div class="section">
         <h3>Referrers<sup>{{ refs | length }}</sup></h3>
         {% for ref, ips in refs | reverse %}
             <p class="{{ loop.cycle('odd', 'even') }}">

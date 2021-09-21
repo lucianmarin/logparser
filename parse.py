@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 
 from clfparser import CLFParser
 from fire import Fire
-from jinja2 import Environment, DictLoader
+from jinja2 import DictLoader, Environment
 from tqdm import tqdm
 from user_agents import parse as uaparse
 
@@ -13,21 +13,22 @@ from template import TEMPLATE
 SKIP_REFS = ["subreply.com", "unfeeder.com"]
 
 
-def generate_html(days, browsers, systems, refs, html):
+def generate_html(days, browsers, systems, devices, refs, html):
     print('Generating HTML...', html)
     env = Environment(loader=DictLoader({'template.html': TEMPLATE}))
     template = env.get_template('template.html')
     with open(html, 'w') as file:
         output = template.render(
             days=sorted(days.items()),
-            systems=sorted(systems.items(), key=lambda item: len(item[1])),
             browsers=sorted(browsers.items(), key=lambda item: len(item[1])),
+            systems=sorted(systems.items(), key=lambda item: len(item[1])),
+            devices=sorted(devices.items(), key=lambda item: len(item[1])),
             refs=sorted(refs.items(), key=lambda item: len(item[1]))
         )
         file.write(output)
 
 
-def console_print(days, browsers, systems, refs):
+def console_print(days, browsers, systems, devices, refs):
     print('----- Days')
     for k, v in sorted(days.items()):
         print(str(len(v)).rjust(5), k)
@@ -36,6 +37,9 @@ def console_print(days, browsers, systems, refs):
         print(str(len(v)).rjust(5), k)
     print('\n----- Operating Systems')
     for k, v in sorted(systems.items(), key=lambda item: len(item[1])):
+        print(str(len(v)).rjust(5), k)
+    print('\n----- Devices')
+    for k, v in sorted(devices.items(), key=lambda item: len(item[1])):
         print(str(len(v)).rjust(5), k)
     print('\n----- Referrers')
     for k, v in sorted(refs.items(), key=lambda item: len(item[1])):
@@ -47,6 +51,7 @@ def parse(gz_path, html=None):
     browsers = defaultdict(set)
     systems = defaultdict(set)
     refs = defaultdict(set)
+    devices = defaultdict(set)
     with gzip.open(gz_path, 'rt') as file:
         for line in tqdm(file, unit=""):
             log = CLFParser.logDict(line)
@@ -58,6 +63,7 @@ def parse(gz_path, html=None):
             if not ua_parsed.is_bot:
                 browsers[ua_parsed.browser.family].add(ip)
                 systems[ua_parsed.os.family].add(ip)
+                devices[ua_parsed.device.brand].add(ip)
             ref = log["Referer"][1:-1].lower()
             ref = ref.replace('://www.', '://')
             p = urlparse(ref)
@@ -67,9 +73,9 @@ def parse(gz_path, html=None):
             if ref != "-" and not any(s in ref for s in SKIP_REFS):
                 refs[ref].add(ip)
     if html:
-        generate_html(days, browsers, systems, refs, html)
+        generate_html(days, browsers, systems, devices, refs, html)
     else:
-        console_print(days, browsers, systems, refs)
+        console_print(days, browsers, systems, devices, refs)
 
 
 if __name__ == "__main__":
