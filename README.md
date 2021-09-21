@@ -4,10 +4,14 @@ Command line parser for common log format (Nginx default).
 
 ## Usage
 
-It counts most important data: refferers, operating systems and browsers.
+It counts most important data: referrers, operating systems, browsers and daily unique visitors (IPs).
 
 ```shell
+# Console output
 python parse.py sitename.log.gz
+
+# HTML output
+python parse.py sitename.log.gz --html ~/sitename/logs.html
 ```
 
 Install and update PIP packages.
@@ -21,60 +25,71 @@ pip install -U -r requirements.txt
 - logparser 24,249/s 
 - GoAccess 6,234/s
 
-## Output
+## Outputs
 
-Output for [Subreply](https://subreply.com/) for a day in Sep, 2021:
+- HTML output is based on Jinja2 templates. It can be improved as you see fit.
+- Console output for [Subreply](https://subreply.com/) for a fews days in Sep, 2021:
 
 ```shell
---- OS
-4 KaiOS
-13 Other
-97 Ubuntu
-129 Linux
-274 iOS
-533 Android
-731 Mac OS X
-43743 Windows
+----- Days
+ 1402 2021-09-14 Tuesday
+  893 2021-09-15 Wednesday
+  797 2021-09-16 Thursday
+  857 2021-09-17 Friday
+  951 2021-09-18 Saturday
+  945 2021-09-19 Sunday
+  869 2021-09-20 Monday
 
---- Browser
-2 Bytespider
-4 Mobile Safari UI/WKWebView
-6 IE
-6 Chrome Mobile iOS
-6 Opera
-13 Go-http-client
-16 Opera Mobile
-22 Firefox iOS
-150 Safari
-158 Firefox Mobile
-177 Chrome Mobile WebView
-184 Chrome Mobile
-203 Edge
-242 Mobile Safari
-689 Firefox
-43646 Chrome
+----- Browsers
+    2 Chrome Mobile iOS
+    2 Bytespider
+    2 HeadlessChrome
+    3 Links
+    4 Firefox iOS
+    4 UC Browser
+    6 IE
+    7 Go-http-client
+    7 Opera
+    8 Other
+   20 Chrome Mobile WebView
+   20 Edge
+   28 Firefox Mobile
+   30 Safari
+   42 Chrome Mobile
+   56 Mobile Safari
+  111 Firefox
+ 3468 Chrome
 
---- Referer
-1 news.ycombinator.com
-2 twtxt.net/conv/j3qpzuq
-2 192.168.1.23:9000
-2 t.co/n2isdf2m3f
-2 old.reddit.com/r/redditalternatives/comments/oioeot/list_of_active_reddit_alternatives_v7
-2 m.youtube.com
-2 lobste.rs/threads
-2 it.reddit.com/r/internetisbeautiful
-2 1mb.club
-2 reddit.com/r/internetisbeautiful
-4 twtxt.net
-4 ro.linkedin.com
-4 199.247.2.88
-6 out.reddit.com/t3_pl9hiu
-6 sjmulder.nl/en/textonly.html
-7 lucianmarin.com
-7 binance.com
-8 google.com
-10 sjmulder.nl
-23 lobste.rs
-30 reddit.com
-181 lobste.rs/s/8fzzmz/what_are_you_doing_this_week
+----- Operating Systems
+   15 Other
+   22 Ubuntu
+   39 Linux
+   63 iOS
+   91 Android
+  101 Mac OS X
+ 3474 Windows
+
+----- Referrers
+    2 twtxt.net
+    2 l.instagram.com
+    2 lobste.rs/s/bffayk/what_are_you_doing_this_weekend
+    3 ro.linkedin.com
+    3 199.247.2.88:80
+    3 t.co/sv4adihlka
+    3 lobste.rs/s/fe2eph/what_are_you_doing_this_weekend
+    4 news.ycombinator.com
+    4 1mb.club
+    4 old.reddit.com/r/internetisbeautiful
+    4 baidu.com
+    4 t.co
+    5 out.reddit.com/t3_pl9hiu
+    5 sjmulder.nl/en/textonly.html
+    8 nt
+   10 199.247.2.88
+   11 lobste.rs
+   13 sjmulder.nl
+   15 google.com
+   16 lucianmarin.com
+   49 reddit.com
+   85 lobste.rs/s/8fzzmz/what_are_you_doing_this_week
 ```
