@@ -12,6 +12,9 @@ python parse.py sitename.log.gz
 
 # HTML output
 python parse.py sitename.log.gz --html ~/sitename/logs.html
+
+# Skip domains in referrers output
+python parse.py sitename.log.gz --skip-ref "subreply.com,unfeeder.com"
 ```
 
 Install and update PIP packages.
@@ -22,7 +25,7 @@ pip install -U -r requirements.txt
 
 ## Speed
 
-- logparser 24,249/s 
+- logparser 24,249/s
 - GoAccess 6,234/s
 
 ## Outputs

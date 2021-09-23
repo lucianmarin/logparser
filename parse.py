@@ -10,8 +10,6 @@ from user_agents import parse as uaparse
 
 from template import TEMPLATE
 
-SKIP_REFS = ["subreply.com", "unfeeder.com"]
-
 
 def generate_html(days, browsers, systems, refs, html):
     print('Generating HTML...', html)
@@ -42,11 +40,12 @@ def console_print(days, browsers, systems, refs):
         print(str(len(v)).rjust(5), k)
 
 
-def parse(gz_path, html=None):
+def parse(gz_path, html=None, skip_ref=""):
     days = defaultdict(set)
     browsers = defaultdict(set)
     systems = defaultdict(set)
     refs = defaultdict(set)
+    skip_refs = [r for r in skip_ref.split(',') if r]
     with gzip.open(gz_path, 'rt') as file:
         for line in tqdm(file, unit=""):
             log = CLFParser.logDict(line)
@@ -64,7 +63,7 @@ def parse(gz_path, html=None):
             if p.path.endswith('/'):
                 p = p._replace(path=p.path[:-1])
             ref = f"{p.netloc}{p.path}"
-            if ref != "-" and not any(s in ref for s in SKIP_REFS):
+            if ref != "-" and not any(s in ref for s in skip_refs):
                 refs[ref].add(ip)
     if html:
         generate_html(days, browsers, systems, refs, html)
