@@ -26,18 +26,23 @@ def generate_html(days, browsers, systems, refs, html):
 
 
 def console_print(days, browsers, systems, refs):
-    print('----- Days')
+    dicts = [days, browsers, systems, refs]
+    pad = len(str(max(len(v) for d in dicts for v in d.values())))
+    print('-' * pad, 'Days')
     for k, v in sorted(days.items()):
-        print(str(len(v)).rjust(5), k)
-    print('\n----- Browsers')
+        print(str(len(v)).rjust(pad), k)
+    print()
+    print('-' * pad, 'Browsers')
     for k, v in sorted(browsers.items(), key=lambda item: len(item[1])):
-        print(str(len(v)).rjust(5), k)
-    print('\n----- Operating Systems')
+        print(str(len(v)).rjust(pad), k)
+    print()
+    print('-' * pad, 'Operating Systems')
     for k, v in sorted(systems.items(), key=lambda item: len(item[1])):
-        print(str(len(v)).rjust(5), k)
-    print('\n----- Referrers')
+        print(str(len(v)).rjust(pad), k)
+    print()
+    print('-' * pad, 'Referrers')
     for k, v in sorted(refs.items(), key=lambda item: len(item[1])):
-        print(str(len(v)).rjust(5), k)
+        print(str(len(v)).rjust(pad), k)
 
 
 def parse(gz_path, html=None, skip_ref=""):
@@ -52,11 +57,10 @@ def parse(gz_path, html=None, skip_ref=""):
             ip = log['h']
             day = log['time'].strftime('%Y-%m-%d %A')
             days[day].add(ip)
-            ua_str = log["Useragent"][1:-1]
-            ua_parsed = uaparse(ua_str)
-            if not ua_parsed.is_bot:
-                browsers[ua_parsed.browser.family].add(ip)
-                systems[ua_parsed.os.family].add(ip)
+            agent = uaparse(log["Useragent"][1:-1])
+            if not agent.is_bot:
+                browsers[agent.browser.family].add(ip)
+                systems[agent.os.family].add(ip)
             ref = log["Referer"][1:-1].lower()
             ref = ref.replace('://www.', '://')
             p = urlparse(ref)
