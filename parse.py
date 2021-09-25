@@ -61,13 +61,11 @@ def parse(gz_path, html=None, skip_ref=""):
             if not agent.is_bot:
                 browsers[agent.browser.family].add(ip)
                 systems[agent.os.family].add(ip)
-            ref = log["Referer"][1:-1].lower()
-            ref = ref.replace('://www.', '://')
-            p = urlparse(ref)
-            if p.path.endswith('/'):
-                p = p._replace(path=p.path[:-1])
-            ref = f"{p.netloc}{p.path}"
-            if ref != "-" and not any(s in ref for s in skip_refs):
+            a = urlparse(log["Referer"][1:-1].lower())
+            netloc = a.netloc[4:] if a.netloc.startswith('www.') else a.netloc
+            path = a.path[:-1]if a.path.endswith('/') else a.path
+            ref = "{0}{1}".format(netloc, path)
+            if not any(s in ref for s in skip_refs):
                 refs[ref].add(ip)
     if html:
         generate_html(days, browsers, systems, refs, html)
