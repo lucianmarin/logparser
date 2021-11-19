@@ -25,8 +25,9 @@ pip install -U -r requirements.txt
 
 ## Speed
 
-- logparser 24,249/s
-- GoAccess 6,234/s
+- Logparser 24,249/s
+- GoAccess 1.3 6,234/s - virtual server, Intel (1 core)
+- GoAccess 1.5 47,299/s - laptop, Intel (4 cores)
 
 ## Outputs
 
