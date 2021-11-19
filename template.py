@@ -5,8 +5,14 @@ TEMPLATE = """<!doctype html>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        html { --black: black; --whitesmoke: #f0f0f0; --black: black; }
+        @media (prefers-color-scheme: dark) {
+            html { --white: black; --whitesmoke: #202020; --black: white; }
+        }
         * { margin: 0; padding: 0; }
         body {
+            background-color: var(--white);
+            color: var(--black);
             font-family: Tahoma, Ubuntu, Cantarell, Oxygen, sans-serif;
             font-size: 13px;
             line-height: 20px;
@@ -31,7 +37,9 @@ TEMPLATE = """<!doctype html>
             text-align: right;
             width: 20%;
         }
-        .section .even { background-color: whitesmoke; border-radius: 5px; }
+        .section .even {
+            background-color: var(--whitesmoke); border-radius: 5px;
+        }
     </style>
 </head>
 <body>
