@@ -10,6 +10,9 @@ It counts most important data: referrers, operating systems, browsers and daily 
 # Console output
 python parse.py sitename.log.gz
 
+# Specify mininum value for display
+python parse.py sitename.log.gz --min-val 1
+
 # HTML output
 python parse.py sitename.log.gz --html ~/sitename/logs.html
 

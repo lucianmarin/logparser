@@ -46,33 +46,41 @@ TEMPLATE = """<!doctype html>
     <div class="section">
         <h3>Days<sup>{{ days | length }}</sup></h3>
         {% for day, ips in days | reverse %}
-            <p class="{{ loop.cycle('odd', 'even') }}">
-                <span>{{ ips | length }}</span> {{ day }}
-            </p>
+            {% if ips | length > min_value %}
+                <p class="{{ loop.cycle('odd', 'even') }}">
+                    <span>{{ ips | length }}</span> {{ day }}
+                </p>
+            {% endif %}
         {% endfor %}
     </div>
     <div class="section">
         <h3>Browsers<sup>{{ browsers | length }}</sup></h3>
         {% for browser, ips in browsers | reverse %}
-            <p class="{{ loop.cycle('odd', 'even') }}">
-                <span>{{ ips | length }}</span> {{ browser }}
-            </p>
+            {% if ips | length > min_value %}
+                <p class="{{ loop.cycle('odd', 'even') }}">
+                    <span>{{ ips | length }}</span> {{ browser }}
+                </p>
+            {% endif %}
         {% endfor %}
     </div>
     <div class="section">
         <h3>Operating Systems<sup>{{ systems | length }}</sup></h3>
         {% for system, ips in systems | reverse %}
-            <p class="{{ loop.cycle('odd', 'even') }}">
-                <span>{{ ips | length }}</span> {{ system }}
-            </p>
+            {% if ips | length > min_value %}
+                <p class="{{ loop.cycle('odd', 'even') }}">
+                    <span>{{ ips | length }}</span> {{ system }}
+                </p>
+            {% endif %}
         {% endfor %}
     </div>
     <div class="section">
         <h3>Referrers<sup>{{ refs | length }}</sup></h3>
         {% for ref, ips in refs | reverse %}
-            <p class="{{ loop.cycle('odd', 'even') }}">
-                <span>{{ ips | length }}</span> {{ ref }}
-            </p>
+            {% if ips | length > min_value %}
+                <p class="{{ loop.cycle('odd', 'even') }}">
+                    <span>{{ ips | length }}</span> {{ ref }}
+                </p>
+            {% endif %}
         {% endfor %}
     </div>
 </body>

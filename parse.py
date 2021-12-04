@@ -11,7 +11,7 @@ from user_agents import parse as uaparse
 from template import TEMPLATE
 
 
-def generate_html(days, browsers, systems, refs, html):
+def generate_html(days, browsers, systems, refs, min_val, html):
     print('Generating HTML...', html)
     env = Environment(loader=DictLoader({'template.html': TEMPLATE}))
     template = env.get_template('template.html')
@@ -20,32 +20,37 @@ def generate_html(days, browsers, systems, refs, html):
             days=sorted(days.items()),
             browsers=sorted(browsers.items(), key=lambda item: len(item[1])),
             systems=sorted(systems.items(), key=lambda item: len(item[1])),
-            refs=sorted(refs.items(), key=lambda item: len(item[1]))
+            refs=sorted(refs.items(), key=lambda item: len(item[1])),
+            min_value=min_val
         )
         file.write(output)
 
 
-def console_print(days, browsers, systems, refs):
+def console_print(days, browsers, systems, refs, min_val):
+    def display(key, value):
+        if len(value) > min_val:
+            print(str(len(value)).rjust(tabs), key)
     dicts = [days, browsers, systems, refs]
-    pad = len(str(max(len(v) for d in dicts for v in d.values())))
-    print('-' * pad, 'Days')
-    for k, v in sorted(days.items()):
-        print(str(len(v)).rjust(pad), k)
+    tabs = len(str(max(len(v) for d in dicts for v in d.values())))
+    padding = "-" * tabs
+    print(padding, 'Days')
+    for key, value in sorted(days.items()):
+        display(key, value)
     print()
-    print('-' * pad, 'Browsers')
-    for k, v in sorted(browsers.items(), key=lambda item: len(item[1])):
-        print(str(len(v)).rjust(pad), k)
+    print(padding, 'Browsers')
+    for key, value in sorted(browsers.items(), key=lambda item: len(item[1])):
+        display(key, value)
     print()
-    print('-' * pad, 'Operating Systems')
-    for k, v in sorted(systems.items(), key=lambda item: len(item[1])):
-        print(str(len(v)).rjust(pad), k)
+    print(padding, 'Operating Systems')
+    for key, value in sorted(systems.items(), key=lambda item: len(item[1])):
+        display(key, value)
     print()
-    print('-' * pad, 'Referrers')
-    for k, v in sorted(refs.items(), key=lambda item: len(item[1])):
-        print(str(len(v)).rjust(pad), k)
+    print(padding, 'Referrers')
+    for key, value in sorted(refs.items(), key=lambda item: len(item[1])):
+        display(key, value)
 
 
-def parse(gz_path, html=None, skip_ref=""):
+def parse(gz_path, min_val=0, html="", skip_ref=""):
     days = defaultdict(set)
     browsers = defaultdict(set)
     systems = defaultdict(set)
@@ -68,9 +73,9 @@ def parse(gz_path, html=None, skip_ref=""):
             if not any(s in ref for s in skip_refs):
                 refs[ref].add(ip)
     if html:
-        generate_html(days, browsers, systems, refs, html)
+        generate_html(days, browsers, systems, refs, min_val, html)
     else:
-        console_print(days, browsers, systems, refs)
+        console_print(days, browsers, systems, refs, min_val)
 
 
 if __name__ == "__main__":
