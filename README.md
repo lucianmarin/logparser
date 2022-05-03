@@ -4,20 +4,20 @@ Command line parser for common log format (Nginx default).
 
 ## Usage
 
-It counts most important data: referrers, operating systems, browsers and daily unique visitors (IPs).
+It counts most important data: referrers, operating systems, browsers and daily unique visitors (IPs). It excludes bots by default.
 
 ```shell
 # Console output
 python parse.py sitename.log.gz
 
-# Specify mininum value for display
-python parse.py sitename.log.gz --hide 1
-
 # HTML output
 python parse.py sitename.log.gz --html ~/sitename/logs.html
 
-# Skip domains in referrers output
-python parse.py sitename.log.gz --ignore "lucianmarin.com,subreply.com"
+# Hide less than or equal values
+python parse.py sitename.log.gz --hide 1
+
+# Ignore hostnames from referrers
+python parse.py sitename.log.gz --ignore "subreply.com"
 ```
 
 Install and update PIP packages.
