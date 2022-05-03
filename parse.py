@@ -11,7 +11,7 @@ from user_agents import parse as uaparse
 from template import TEMPLATE
 
 
-def generate_html(days, browsers, systems, refs, min_val, html):
+def generate_html(days, browsers, systems, refs, hide, html):
     print('Generating HTML...', html)
     env = Environment(loader=DictLoader({'template.html': TEMPLATE}))
     template = env.get_template('template.html')
@@ -21,14 +21,14 @@ def generate_html(days, browsers, systems, refs, min_val, html):
             browsers=sorted(browsers.items(), key=lambda item: len(item[1])),
             systems=sorted(systems.items(), key=lambda item: len(item[1])),
             refs=sorted(refs.items(), key=lambda item: len(item[1])),
-            min_value=min_val
+            hide=hide
         )
         file.write(output)
 
 
-def console_print(days, browsers, systems, refs, min_val):
+def console_print(days, browsers, systems, refs, hide):
     def display(key, value):
-        if len(value) > min_val:
+        if len(value) > hide:
             print(str(len(value)).rjust(tabs), key)
     dicts = [days, browsers, systems, refs]
     tabs = len(str(max(len(v) for d in dicts for v in d.values())))
@@ -50,12 +50,12 @@ def console_print(days, browsers, systems, refs, min_val):
         display(key, value)
 
 
-def parse(gz_path, min_val=0, html="", skip_ref=""):
+def parse(gz_path, hide=0, html="", ignore=""):
     days = defaultdict(set)
     browsers = defaultdict(set)
     systems = defaultdict(set)
     refs = defaultdict(set)
-    skip_refs = [r for r in skip_ref.split(',') if r]
+    ignores = [r for r in ignore.split(',') if r]
     with gzip.open(gz_path, 'rt') as file:
         for line in tqdm(file, unit=""):
             log = CLFParser.logDict(line)
@@ -70,12 +70,12 @@ def parse(gz_path, min_val=0, html="", skip_ref=""):
             netloc = a.netloc[4:] if a.netloc.startswith('www.') else a.netloc
             path = a.path[:-1]if a.path.endswith('/') else a.path
             ref = "{0}{1}".format(netloc, path)
-            if not any(s in ref for s in skip_refs):
+            if not any(s in ref for s in ignores):
                 refs[ref].add(ip)
     if html:
-        generate_html(days, browsers, systems, refs, min_val, html)
+        generate_html(days, browsers, systems, refs, hide, html)
     else:
-        console_print(days, browsers, systems, refs, min_val)
+        console_print(days, browsers, systems, refs, hide)
 
 
 if __name__ == "__main__":

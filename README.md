@@ -11,13 +11,13 @@ It counts most important data: referrers, operating systems, browsers and daily 
 python parse.py sitename.log.gz
 
 # Specify mininum value for display
-python parse.py sitename.log.gz --min-val 1
+python parse.py sitename.log.gz --hide 1
 
 # HTML output
 python parse.py sitename.log.gz --html ~/sitename/logs.html
 
 # Skip domains in referrers output
-python parse.py sitename.log.gz --skip-ref "subreply.com,unfeeder.com"
+python parse.py sitename.log.gz --ignore "lucianmarin.com,subreply.com"
 ```
 
 Install and update PIP packages.
