@@ -55,7 +55,7 @@ def parse(gz_path, hide=0, html="", ignore=""):
     browsers = defaultdict(set)
     systems = defaultdict(set)
     refs = defaultdict(set)
-    ignores = [r for r in ignore.split(',') if r]
+    ignores = {r for r in ignore.split(',') if r}
     with gzip.open(gz_path, 'rt') as file:
         for line in tqdm(file, unit=""):
             log = CLFParser.logDict(line)
@@ -68,10 +68,9 @@ def parse(gz_path, hide=0, html="", ignore=""):
                 systems[agent.os.family].add(ip)
             a = urlparse(log["Referer"][1:-1].lower())
             netloc = a.netloc[4:] if a.netloc.startswith('www.') else a.netloc
-            path = a.path[:-1]if a.path.endswith('/') else a.path
-            ref = "{0}{1}".format(netloc, path)
-            if not any(s in ref for s in ignores):
-                refs[ref].add(ip)
+            if netloc not in ignores:
+                path = a.path[:-1]if a.path.endswith('/') else a.path
+                refs[netloc + path].add(ip)
     if html:
         generate_html(days, browsers, systems, refs, hide, html)
     else:
