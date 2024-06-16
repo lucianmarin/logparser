@@ -1,5 +1,6 @@
 clfparser
 fire
 jinja2
+tldextract
 tqdm
 user-agents
