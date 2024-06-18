@@ -11,7 +11,7 @@ from tldextract import extract
 
 from template import TEMPLATE
 
-BOTS = ["Applebot", "Bytespider"]
+BOTS = ["Amazonbot", "Applebot", "Bytespider"]
 
 
 def get_hostname(value):
