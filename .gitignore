@@ -1,8 +1,7 @@
 .DS_Store
 .pytest_cache
 
-*.log.gz
 __pycache__
 
-default.html
-index.html
+*.html
+*.log.gz

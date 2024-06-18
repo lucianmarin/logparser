@@ -83,6 +83,16 @@ TEMPLATE = """<!doctype html>
             {% endif %}
         {% endfor %}
     </div>
+    <div class="section">
+        <h3>Paths<sup>{{ paths | length }}</sup></h3>
+        {% for system, ips in paths | reverse %}
+            {% if ips | length > hide %}
+                <p class="{{ loop.cycle('odd', 'even') }}">
+                    <span>{{ ips | length }}</span> {{ system }}
+                </p>
+            {% endif %}
+        {% endfor %}
+    </div>
 </body>
 </html>
 """
