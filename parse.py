@@ -30,7 +30,7 @@ def get_link(value):
     return netloc + path
 
 
-def generate_html(days, browsers, systems, refs, paths, hide, html):
+def generate_html(days, browsers, systems, refs, hide, html):
     print('Generating HTML...', html)
     env = Environment(loader=DictLoader({'template.html': TEMPLATE}))
     template = env.get_template('template.html')
@@ -40,13 +40,12 @@ def generate_html(days, browsers, systems, refs, paths, hide, html):
             browsers=sorted(browsers.items(), key=lambda item: len(item[1])),
             systems=sorted(systems.items(), key=lambda item: len(item[1])),
             refs=sorted(refs.items(), key=lambda item: len(item[1])),
-            paths=sorted(paths.items(), key=lambda item: len(item[1])),
             hide=hide
         )
         file.write(output)
 
 
-def console_print(days, browsers, systems, refs, paths, hide):
+def console_print(days, browsers, systems, refs, hide):
     def display(key, value):
         if len(value) > hide:
             print(str(len(value)).rjust(tabs), key)
@@ -68,17 +67,12 @@ def console_print(days, browsers, systems, refs, paths, hide):
     print(padding, 'Referrers')
     for key, value in sorted(refs.items(), key=lambda item: len(item[1])):
         display(key, value)
-    print()
-    print(padding, 'Paths')
-    for key, value in sorted(paths.items(), key=lambda item: len(item[1])):
-        display(key, value)
 
 
 def parse(gz_path, hide=0, html="", ignore=""):
     days = defaultdict(set)
     browsers = defaultdict(set)
     systems = defaultdict(set)
-    paths = defaultdict(set)
     refs = defaultdict(set)
     ignores = {i for i in ignore.split(',') if i}
     with gzip.open(gz_path, 'rt') as file:
@@ -90,12 +84,6 @@ def parse(gz_path, hide=0, html="", ignore=""):
             if agent.is_bot or agent.browser.family in BOTS or hostname in ignores:
                 continue
             ip = log['h']
-            r = log['r'][1:-1]
-            s = log['s']
-            if r and s.startswith('20'):
-                request, path, http = r.split()
-                if request == "GET":
-                    paths[path].add(ip)
             day = log['time'].strftime('%Y-%m-%d %A')
             days[day].add(ip)
             browsers[agent.browser.family].add(ip)
@@ -103,9 +91,9 @@ def parse(gz_path, hide=0, html="", ignore=""):
             link = get_link(ref)
             refs[link].add(ip)
     if html:
-        generate_html(days, browsers, systems, refs, paths, hide, html)
+        generate_html(days, browsers, systems, refs, hide, html)
     else:
-        console_print(days, browsers, systems, refs, paths, hide)
+        console_print(days, browsers, systems, refs, hide)
 
 
 if __name__ == "__main__":
