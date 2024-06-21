@@ -10,14 +10,14 @@ It counts most important data: referrers, operating systems, browsers and daily 
 # Console output
 python parse.py sitename.log.gz
 
+# Hide less than or equal values
+python parse.py sitename.log.gz --lowest 1
+
 # HTML output
 python parse.py sitename.log.gz --html ~/sitename/logs.html
 
-# Hide less than or equal values
-python parse.py sitename.log.gz --hide 1
-
 # Ignore hostnames from referrers
-python parse.py sitename.log.gz --ignore "subreply.com"
+python parse.py sitename.log.gz --skip "subreply.com"
 ```
 
 Install and update PIP packages.
