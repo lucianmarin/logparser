@@ -13,6 +13,7 @@ from template import TEMPLATE
 
 BOTS = [
     "Amazonbot", "Applebot", "Bytespider", "FacebookBot", "Twitterbot",
+    "FriendlyCrawler", "ISSCyberRiskCrawler", "YisouSpider",
     "Go-http-client", "http.rb", "scalaj-http",
     "Python aiohttp", "Python Requests",
 ]
