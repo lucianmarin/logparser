@@ -1,13 +1,14 @@
 import gzip
 from collections import defaultdict
+from functools import lru_cache
 from urllib.parse import urlparse
 
 from clfparser import CLFParser
 from fire import Fire
 from jinja2 import DictLoader, Environment
+from tldextract import extract
 from tqdm import tqdm
 from user_agents import parse as uaparse
-from tldextract import extract
 
 from template import TEMPLATE
 
@@ -19,6 +20,7 @@ BOTS = [
 ]
 
 
+@lru_cache(maxsize=None)
 def get_hostname(value):
     r = extract(value)
     if not r.suffix:
@@ -28,6 +30,7 @@ def get_hostname(value):
     return ".".join((r.subdomain, r.domain, r.suffix))
 
 
+@lru_cache(maxsize=None)
 def get_link(value):
     a = urlparse(value)
     netloc = a.netloc[4:] if a.netloc.startswith('www.') else a.netloc
