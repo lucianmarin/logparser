@@ -46,7 +46,7 @@ TEMPLATE = """<!doctype html>
     <div class="section">
         <h3>Days<sup>{{ days | length }}</sup></h3>
         {% for day, ips in days | reverse %}
-            {% if ips | length > lowest %}
+            {% if ips | length > hide %}
                 <p class="{{ loop.cycle('odd', 'even') }}">
                     <span>{{ ips | length }}</span> {{ day }}
                 </p>
@@ -56,7 +56,7 @@ TEMPLATE = """<!doctype html>
     <div class="section">
         <h3>Browsers<sup>{{ browsers | length }}</sup></h3>
         {% for browser, ips in browsers | reverse %}
-            {% if ips | length > lowest %}
+            {% if ips | length > hide %}
                 <p class="{{ loop.cycle('odd', 'even') }}">
                     <span>{{ ips | length }}</span> {{ browser }}
                 </p>
@@ -66,7 +66,7 @@ TEMPLATE = """<!doctype html>
     <div class="section">
         <h3>Operating Systems<sup>{{ systems | length }}</sup></h3>
         {% for system, ips in systems | reverse %}
-            {% if ips | length > lowest %}
+            {% if ips | length > hide %}
                 <p class="{{ loop.cycle('odd', 'even') }}">
                     <span>{{ ips | length }}</span> {{ system }}
                 </p>
@@ -76,7 +76,7 @@ TEMPLATE = """<!doctype html>
     <div class="section">
         <h3>Bots<sup>{{ bots | length }}</sup></h3>
         {% for bot, ips in bots | reverse %}
-            {% if ips | length > lowest %}
+            {% if ips | length > hide %}
                 <p class="{{ loop.cycle('odd', 'even') }}">
                     <span>{{ ips | length }}</span> {{ bot }}
                 </p>
@@ -86,7 +86,7 @@ TEMPLATE = """<!doctype html>
     <div class="section">
         <h3>Referrers<sup>{{ refs | length }}</sup></h3>
         {% for ref, ips in refs | reverse %}
-            {% if ips | length > lowest %}
+            {% if ips | length > hide %}
                 <p class="{{ loop.cycle('odd', 'even') }}">
                     <span>{{ ips | length }}</span> {{ ref }}
                 </p>

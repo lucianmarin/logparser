@@ -38,11 +38,11 @@ def get_link(value):
     return netloc + path
 
 
-def generate_html(days, browsers, systems, bots, refs, hide, html):
-    print('Generating HTML...', html)
+def generate_page(days, browsers, systems, bots, refs, hide, page):
+    print('Generating page...', page)
     env = Environment(loader=DictLoader({'template.html': TEMPLATE}))
     template = env.get_template('template.html')
-    with open(html, 'w') as file:
+    with open(page, 'w') as file:
         output = template.render(
             days=sorted(days.items()),
             browsers=sorted(browsers.items(), key=lambda item: len(item[1])),
@@ -82,14 +82,14 @@ def console_print(days, browsers, systems, bots, refs, hide):
         display(key, value)
 
 
-def parse(gz_path, hide=0, html="", skip=""):
+def parse(gz_path, hide=0, page="", skip=""):
     """
     Parse a gzipped log file.
 
     Args:
         gz_path (str): Path to a gzipped log file
         hide (int): Hide rows with hide number of items
-        html (str): Specify a .html file path
+        page (str): Specify a .page file path
         skip (str): List referers to skip
     """
     days = defaultdict(set)
@@ -115,8 +115,8 @@ def parse(gz_path, hide=0, html="", skip=""):
                 hostname = get_hostname(ref)
                 if hostname not in skipped:
                     refs[link].add(ip)
-    if html:
-        generate_html(days, browsers, systems, bots, refs, hide, html)
+    if page:
+        generate_page(days, browsers, systems, bots, refs, hide, page)
     else:
         console_print(days, browsers, systems, bots, refs, hide)
 

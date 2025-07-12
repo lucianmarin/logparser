@@ -14,7 +14,7 @@ python parse.py sitename.log.gz
 python parse.py sitename.log.gz --hide 1
 
 # HTML output
-python parse.py sitename.log.gz --html ~/sitename/logs.html
+python parse.py sitename.log.gz --page ~/sitename/logs.html
 
 # Ignore hostnames from referrers
 python parse.py sitename.log.gz --skip "subreply.com"
