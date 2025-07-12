@@ -38,7 +38,7 @@ def get_link(value):
     return netloc + path
 
 
-def generate_html(days, browsers, systems, bots, refs, lowest, html):
+def generate_html(days, browsers, systems, bots, refs, hide, html):
     print('Generating HTML...', html)
     env = Environment(loader=DictLoader({'template.html': TEMPLATE}))
     template = env.get_template('template.html')
@@ -49,14 +49,14 @@ def generate_html(days, browsers, systems, bots, refs, lowest, html):
             systems=sorted(systems.items(), key=lambda item: len(item[1])),
             bots=sorted(bots.items(), key=lambda item: len(item[1])),
             refs=sorted(refs.items(), key=lambda item: len(item[1])),
-            lowest=lowest
+            hide=hide
         )
         file.write(output)
 
 
-def console_print(days, browsers, systems, bots, refs, lowest):
+def console_print(days, browsers, systems, bots, refs, hide):
     def display(key, value):
-        if len(value) > lowest:
+        if len(value) > hide:
             print(str(len(value)).rjust(tabs), key)
     dicts = [days, browsers, systems, refs]
     tabs = len(str(max(len(v) for d in dicts for v in d.values())))
@@ -82,13 +82,13 @@ def console_print(days, browsers, systems, bots, refs, lowest):
         display(key, value)
 
 
-def parse(gz_path, lowest=0, html="", skip=""):
+def parse(gz_path, hide=0, html="", skip=""):
     """
     Parse a gzipped log file.
 
     Args:
         gz_path (str): Path to a gzipped log file
-        lowest (int): Hide rows with lowest number of items
+        hide (int): Hide rows with hide number of items
         html (str): Specify a .html file path
         skip (str): List referers to skip
     """
@@ -116,9 +116,9 @@ def parse(gz_path, lowest=0, html="", skip=""):
                 if hostname not in skipped:
                     refs[link].add(ip)
     if html:
-        generate_html(days, browsers, systems, bots, refs, lowest, html)
+        generate_html(days, browsers, systems, bots, refs, hide, html)
     else:
-        console_print(days, browsers, systems, bots, refs, lowest)
+        console_print(days, browsers, systems, bots, refs, hide)
 
 
 if __name__ == "__main__":
