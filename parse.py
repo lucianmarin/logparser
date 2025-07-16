@@ -115,7 +115,7 @@ def parse(path, hide=0, file="", skip=""):
                 hostname = get_hostname(ref)
                 if hostname not in skipped:
                     refs[link].add(ip)
-    if page:
+    if file:
         generate_file(days, browsers, systems, bots, refs, hide, file)
     else:
         console_print(days, browsers, systems, bots, refs, hide)
