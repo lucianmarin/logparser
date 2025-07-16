@@ -38,11 +38,11 @@ def get_link(value):
     return netloc + path
 
 
-def generate_page(days, browsers, systems, bots, refs, hide, page):
-    print('Generating page...', page)
+def generate_file(days, browsers, systems, bots, refs, hide, file):
+    print('Generating file...', file)
     env = Environment(loader=DictLoader({'template.html': TEMPLATE}))
     template = env.get_template('template.html')
-    with open(page, 'w') as file:
+    with open(file, 'w') as f:
         output = template.render(
             days=sorted(days.items()),
             browsers=sorted(browsers.items(), key=lambda item: len(item[1])),
@@ -51,7 +51,7 @@ def generate_page(days, browsers, systems, bots, refs, hide, page):
             refs=sorted(refs.items(), key=lambda item: len(item[1])),
             hide=hide
         )
-        file.write(output)
+        f.write(output)
 
 
 def console_print(days, browsers, systems, bots, refs, hide):
@@ -82,14 +82,14 @@ def console_print(days, browsers, systems, bots, refs, hide):
         display(key, value)
 
 
-def parse(gz_path, hide=0, page="", skip=""):
+def parse(path, hide=0, file="", skip=""):
     """
     Parse a gzipped log file.
 
     Args:
-        gz_path (str): Path to a gzipped log file
+        path (str): Path to a gzipped log file
         hide (int): Hide rows with hide number of items
-        page (str): Specify a .page file path
+        file (str): Specify a .page file path
         skip (str): List referers to skip
     """
     days = defaultdict(set)
@@ -98,8 +98,8 @@ def parse(gz_path, hide=0, page="", skip=""):
     refs = defaultdict(set)
     bots = defaultdict(set)
     skipped = [i for i in skip.split(',') if i]
-    with gzip.open(gz_path, 'rt') as file:
-        for line in tqdm(file, unit="l"):
+    with gzip.open(path, 'rt') as f:
+        for line in tqdm(f, unit="l"):
             log = CLFParser.logDict(line)
             ip = log['h']
             agent = uaparse(log["Useragent"][1:-1])
@@ -116,7 +116,7 @@ def parse(gz_path, hide=0, page="", skip=""):
                 if hostname not in skipped:
                     refs[link].add(ip)
     if page:
-        generate_page(days, browsers, systems, bots, refs, hide, page)
+        generate_file(days, browsers, systems, bots, refs, hide, file)
     else:
         console_print(days, browsers, systems, bots, refs, hide)
 
