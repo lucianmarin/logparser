@@ -58,7 +58,7 @@ def generate_html(days, browsers, systems, bots, refs, hide, html):
     print('Generating html...', html)
     env = Environment(loader=DictLoader({'template.html': TEMPLATE}))
     template = env.get_template('template.html')
-    with open(html, 'w') as file:
+    with open(html, 'w') as f:
         output = template.render(
             days=sorted(days.items()),
             browsers=sorted(browsers.items(), key=lambda item: len(item[1])),
@@ -67,7 +67,7 @@ def generate_html(days, browsers, systems, bots, refs, hide, html):
             refs=sorted(refs.items(), key=lambda item: len(item[1])),
             hide=hide
         )
-        file.write(output)
+        f.write(output)
 
 
 def console_print(days, browsers, systems, bots, refs, hide):
@@ -103,7 +103,7 @@ def parse(gz_path, hide=0, html="", skip=""):
     Parse a gzipped log file.
 
     Args:
-        gz_path (str): Path to a gzipped log file
+        path (str): Path to a gzipped log file
         hide (int): Hide rows with hide number of items
         html (str): Specify a .html file path
         skip (str): List referers to skip
