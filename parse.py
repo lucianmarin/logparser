@@ -1,9 +1,10 @@
 import gzip
+import re
 from collections import defaultdict
+from datetime import datetime
 from functools import lru_cache
 from urllib.parse import urlparse
 
-from clfparser import CLFParser
 from fire import Fire
 from jinja2 import DictLoader, Environment
 from tldextract import extract
@@ -18,6 +19,9 @@ BOTS = [
     "Go-http-client", "http.rb", "scalaj-http",
     "Python aiohttp", "Python Requests",
 ]
+
+COMBINED_LOG_FORMAT = re.compile(r'(?P<h>([^ ]*)) (?P<l>([^ ]*)) (?P<u>([^ ]*)) (?P<t>\[([^]]*)\]) (?P<r>"([^"]*)") (?P<s>([^ ]*)) (?P<b>([^ ]*)) (?P<Referer>"([^"]*)") (?P<Useragent>"([^"]*)")')
+COMMON_LOG_FORMAT = re.compile(r'(?P<h>([^ ]*)) (?P<l>([^ ]*)) (?P<u>([^ ]*)) (?P<t>\[([^]]*)\]) (?P<r>"([^"]*)") (?P<s>([^ ]*)) (?P<b>([^ ]*))')
 
 
 @lru_cache(maxsize=None)
@@ -38,11 +42,23 @@ def get_link(value):
     return netloc + path
 
 
-def generate_page(days, browsers, systems, bots, refs, hide, page):
-    print('Generating page...', page)
+@lru_cache(maxsize=None)
+def get_ua(ua_string):
+    return uaparse(ua_string)
+
+
+@lru_cache(maxsize=None)
+def get_day_from_str(date_str):
+    # date_str format: 01/Jan/2022
+    dt = datetime.strptime(date_str, '%d/%b/%Y')
+    return dt.strftime('%Y-%m-%d %A')
+
+
+def generate_html(days, browsers, systems, bots, refs, hide, html):
+    print('Generating html...', html)
     env = Environment(loader=DictLoader({'template.html': TEMPLATE}))
     template = env.get_template('template.html')
-    with open(page, 'w') as file:
+    with open(html, 'w') as file:
         output = template.render(
             days=sorted(days.items()),
             browsers=sorted(browsers.items(), key=lambda item: len(item[1])),
@@ -82,14 +98,14 @@ def console_print(days, browsers, systems, bots, refs, hide):
         display(key, value)
 
 
-def parse(gz_path, hide=0, page="", skip=""):
+def parse(gz_path, hide=0, html="", skip=""):
     """
     Parse a gzipped log file.
 
     Args:
         gz_path (str): Path to a gzipped log file
         hide (int): Hide rows with hide number of items
-        page (str): Specify a .page file path
+        html (str): Specify a .html file path
         skip (str): List referers to skip
     """
     days = defaultdict(set)
@@ -100,13 +116,27 @@ def parse(gz_path, hide=0, page="", skip=""):
     skipped = [i for i in skip.split(',') if i]
     with gzip.open(gz_path, 'rt') as file:
         for line in tqdm(file, unit="l"):
-            log = CLFParser.logDict(line)
+            m = COMBINED_LOG_FORMAT.match(line)
+            if m:
+                log = m.groupdict()
+            else:
+                m = COMMON_LOG_FORMAT.match(line)
+                if m:
+                    log = m.groupdict()
+                    log['Useragent'] = ""
+                    log['Referer'] = ""
+                else:
+                    continue
+
             ip = log['h']
-            agent = uaparse(log["Useragent"][1:-1])
+            agent = get_ua(log["Useragent"][1:-1])
             if agent.is_bot or agent.browser.family in BOTS:
                 bots[agent.browser.family].add(ip)
             else:
-                day = log['time'].strftime('%Y-%m-%d %A')
+                # log['t'] is like [01/Jan/2022:00:00:00 +0000]
+                # we want 01/Jan/2022 which is index 1 to 12
+                date_part = log['t'][1:12]
+                day = get_day_from_str(date_part)
                 days[day].add(ip)
                 browsers[agent.browser.family].add(ip)
                 systems[agent.os.family].add(ip)
@@ -115,8 +145,8 @@ def parse(gz_path, hide=0, page="", skip=""):
                 hostname = get_hostname(ref)
                 if hostname not in skipped:
                     refs[link].add(ip)
-    if page:
-        generate_page(days, browsers, systems, bots, refs, hide, page)
+    if html:
+        generate_html(days, browsers, systems, bots, refs, hide, html)
     else:
         console_print(days, browsers, systems, bots, refs, hide)
 
