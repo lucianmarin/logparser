@@ -88,7 +88,7 @@ TEMPLATE = """<!doctype html>
         {% for ref, ips in refs | reverse %}
             {% if ips | length > hide %}
                 <p class="{{ loop.cycle('odd', 'even') }}">
-                    <span>{{ ips | length }}</span> {{ ref }}
+                    <span>{{ ips | length }}</span> {{ ref | striptags }}
                 </p>
             {% endif %}
         {% endfor %}
