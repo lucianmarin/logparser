@@ -18,6 +18,9 @@ python parse.py sitename.log.gz --page ~/sitename/logs.html
 
 # Ignore hostnames from referrers
 python parse.py sitename.log.gz --skip "subreply.com"
+
+# Drop logs older than specified days and rebuild log file
+python parse.py sitename.log.gz --drop 30
 ```
 
 Install and update PIP packages.
