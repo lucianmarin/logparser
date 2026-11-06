@@ -1,5 +1,7 @@
 # Logparser
 
+![screenshot](screenshot.png)
+
 Command line parser for common log format (Nginx default).
 
 ## Usage
