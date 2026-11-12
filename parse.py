@@ -98,12 +98,12 @@ def console_print(days, browsers, systems, bots, refs, hide):
         display(key, value)
 
 
-def parse(gz_path, hide=0, html="", skip="", drop=0):
+def parse(*gz_paths, hide=0, html="", skip="", drop=0):
     """
-    Parse a gzipped log file.
+    Parse gzipped log files.
 
     Args:
-        path (str): Path to a gzipped log file
+        gz_paths (str): Paths to gzipped log files
         hide (int): Hide rows with hide number of items
         html (str): Specify a .html file path
         skip (str): List referers to skip
@@ -116,48 +116,49 @@ def parse(gz_path, hide=0, html="", skip="", drop=0):
     bots = defaultdict(set)
     skipped = [i for i in skip.split(',') if i]
     cutoff = (datetime.now() - timedelta(days=drop)).strftime('%Y-%m-%d') if drop else ""
-    lines = []
-    dropped = False
-    with gzip.open(gz_path, 'rt') as file:
-        for line in tqdm(file, unit="l"):
-            m = COMBINED_LOG_FORMAT.match(line)
-            if m:
-                log = m.groupdict()
-            else:
-                m = COMMON_LOG_FORMAT.match(line)
+    for gz_path in gz_paths:
+        lines = []
+        dropped = False
+        with gzip.open(gz_path, 'rt') as file:
+            for line in tqdm(file, unit="l", desc=gz_path):
+                m = COMBINED_LOG_FORMAT.match(line)
                 if m:
                     log = m.groupdict()
-                    log['Useragent'] = ""
-                    log['Referer'] = ""
                 else:
-                    continue
+                    m = COMMON_LOG_FORMAT.match(line)
+                    if m:
+                        log = m.groupdict()
+                        log['Useragent'] = ""
+                        log['Referer'] = ""
+                    else:
+                        continue
 
-            # log['t'] is like [01/Jan/2022:00:00:00 +0000]
-            # we want 01/Jan/2022 which is index 1 to 12
-            date_part = log['t'][1:12]
-            day = get_day_from_str(date_part)
-            if drop:
-                if day[:10] < cutoff:
-                    dropped = True
-                    continue
-                lines.append(line)
+                # log['t'] is like [01/Jan/2022:00:00:00 +0000]
+                # we want 01/Jan/2022 which is index 1 to 12
+                date_part = log['t'][1:12]
+                day = get_day_from_str(date_part)
+                if drop:
+                    if day[:10] < cutoff:
+                        dropped = True
+                        continue
+                    lines.append(line)
 
-            ip = log['h']
-            agent = get_ua(log["Useragent"][1:-1])
-            if agent.is_bot or agent.browser.family in BOTS:
-                bots[agent.browser.family].add(ip)
-            else:
-                days[day].add(ip)
-                browsers[agent.browser.family].add(ip)
-                systems[agent.os.family].add(ip)
-                ref = log["Referer"][1:-1].lower()
-                link = get_link(ref)
-                hostname = get_hostname(ref)
-                if hostname not in skipped:
-                    refs[link].add(ip)
-    if dropped:
-        with gzip.open(gz_path, 'wt') as file:
-            file.writelines(lines)
+                ip = log['h']
+                agent = get_ua(log["Useragent"][1:-1])
+                if agent.is_bot or agent.browser.family in BOTS:
+                    bots[agent.browser.family].add(ip)
+                else:
+                    days[day].add(ip)
+                    browsers[agent.browser.family].add(ip)
+                    systems[agent.os.family].add(ip)
+                    ref = log["Referer"][1:-1].lower()
+                    link = get_link(ref)
+                    hostname = get_hostname(ref)
+                    if hostname not in skipped:
+                        refs[link].add(ip)
+        if dropped:
+            with gzip.open(gz_path, 'wt') as file:
+                file.writelines(lines)
     if html:
         generate_html(days, browsers, systems, bots, refs, hide, html)
     else:

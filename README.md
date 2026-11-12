@@ -11,6 +11,7 @@ It counts most important data: referrers, operating systems, browsers and daily 
 ```shell
 # Console output
 python parse.py sitename.log.gz
+python parse.py sitename.log.gz sub.sitename.log.gz
 
 # Hide less than or equal values
 python parse.py sitename.log.gz --hide 1
