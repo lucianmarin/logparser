@@ -33,11 +33,18 @@ Install and update PIP packages.
 pip install -U -r requirements.txt
 ```
 
-## Speed
+## Benchmark
 
-- Logparser 24,249/s
-- GoAccess 1.3 6,234/s - virtual server, Intel (1 core)
-- GoAccess 1.5 47,299/s - laptop, Intel (4 cores)
+Measured on `logs/sub.log.gz` (1,968,224 lines, 42.86 MiB gzipped) on Apple M4 (10 cores):
+
+| Tool | Command / Mode | Median | Min – Max | Throughput | Relative |
+|---|---|---:|---:|---:|---:|
+| `logparser` | Native Pura binary | 1.197s | 1.194s – 1.199s | 1,643,809 lines/s | 1.0× |
+| `goaccess` (`-j 6`) | `gzcat` \| GoAccess 1.12 (6 threads) | 9.002s | 8.900s – 9.006s | 218,635 lines/s | 7.5× slower |
+| `parse.py` | Python 3.14 (`venv`) | 16.465s | 16.464s – 16.531s | 119,537 lines/s | 13.8× slower |
+| `goaccess` (default) | `gzcat` \| GoAccess 1.12 (1 thread) | 34.434s | 34.221s – 34.647s | 57,159 lines/s | 28.8× slower |
+
+GoAccess does not read `.gz` files directly, so `gzcat` was piped with `--log-format=COMBINED --no-progress -o <tmp.html>`. Values are medians of 3 warmed runs (2 runs for default single-threaded GoAccess).
 
 ## Outputs
 
