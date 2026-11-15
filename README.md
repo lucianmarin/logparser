@@ -20,8 +20,8 @@ python parse.py sitename.log.gz --hide 1
 python parse.py sitename.log.gz --page ~/sitename/logs.html
 
 # Ignore hostnames from referrers
-python parse.py sitename.log.gz --skip "subreply.com"
-python parse.py sitename.log.gz --skip "*.sitename.com"   # skip bare domain + all subdomains
+python parse.py sitename.log.gz --skip subreply.com
+python parse.py sitename.log.gz --skip *.subreply.com  # only subdomains
 
 # Drop logs older than specified days and rebuild log file
 python parse.py sitename.log.gz --drop 30
