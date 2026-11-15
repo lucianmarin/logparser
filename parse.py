@@ -98,6 +98,38 @@ def console_print(days, browsers, systems, bots, refs, hide):
         display(key, value)
 
 
+def _skip_match(host, pattern):
+    """Whether a referrer hostname should be skipped for a --skip pattern.
+
+    A leading ``*`` or ``.`` makes the pattern a domain suffix match, so
+    ``*.lucianmarin.com`` (or ``.lucianmarin.com``) matches the bare domain
+    ``lucianmarin.com`` and every subdomain such as ``math.lucianmarin.com``.
+    Otherwise an exact (case-insensitive) hostname match is used.
+    """
+    host = (host or "").strip().lower()
+    pattern = (pattern or "").strip().lower()
+    if not pattern:
+        return False
+    wildcard = False
+    if pattern.startswith("*."):
+        base = pattern[2:]
+        wildcard = True
+    elif pattern.startswith("."):
+        base = pattern[1:]
+        wildcard = True
+    elif pattern.startswith("*"):
+        base = pattern.lstrip("*").lstrip(".")
+        wildcard = True
+    else:
+        base = pattern
+    if not base:
+        return False
+    if not wildcard:
+        return host == base
+    # Wildcard matches subdomains only, not the bare domain itself.
+    return host.endswith("." + base) and host != base
+
+
 def parse(*gz_paths, hide=0, html="", skip="", drop=0):
     """
     Parse gzipped log files.
@@ -154,7 +186,7 @@ def parse(*gz_paths, hide=0, html="", skip="", drop=0):
                     ref = log["Referer"][1:-1].lower()
                     link = get_link(ref)
                     hostname = get_hostname(ref)
-                    if hostname not in skipped:
+                    if not any(_skip_match(hostname, p) for p in skipped):
                         refs[link].add(ip)
         if dropped:
             with gzip.open(gz_path, 'wt') as file:

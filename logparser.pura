@@ -2650,6 +2650,52 @@ static def parse_ref_link_and_host(low: cstr, len: i32, link_out: str, link_len_
     host_out[hl] = '\0'
     val(host_len_out) = u32(hl)
 
+static inline def skip_pattern_matches(pattern: cstr, host: cstr, host_len: u32) -> bool:
+    # Lowercase copies
+    ph: char[260]
+    hh: char[260]
+    pi: usize = 0
+    hi: usize = 0
+    while pattern[pi] != '\0' and pi < 255:
+        ch: u8 = u8(pattern[pi])
+        if ch >= 'A' and ch <= 'Z':
+            ch = u8(ch + 32)
+        ph[pi] = char(ch)
+        pi += 1
+    ph[pi] = '\0'
+    while hi < usize(host_len) and hi < 255:
+        ch: u8 = u8(host[hi])
+        if ch >= 'A' and ch <= 'Z':
+            ch = u8(ch + 32)
+        hh[hi] = char(ch)
+        hi += 1
+    hh[hi] = '\0'
+
+    # Detect wildcard prefix
+    base: cstr = ph
+    wildcard: bool = false
+    if ph[0] == '*' and ph[1] == '.':
+        base = ph + 2
+        wildcard = true
+    elif ph[0] == '.':
+        base = ph + 1
+        wildcard = true
+    elif ph[0] == '*':
+        while base[0] == '*' or base[0] == '.':
+            base += 1
+        wildcard = true
+    if base[0] == '\0':
+        return false
+
+    blen: usize = strlen(base)
+    hlen: usize = strlen(hh)
+    if not wildcard:
+        return hlen == blen and memcmp(hh, base, blen) == 0
+    # Wildcard matches subdomains only, not the bare domain itself.
+    if hlen > blen and hh[hlen - blen - 1] == '.' and memcmp(hh + hlen - blen, base, blen) == 0:
+        return true
+    return false
+
 static inline def refcache_get(c: addr[RefCache], raw: cstr, rlen: u32) -> addr[RefCacheEntry]:
     h: u64 = hash_bytes(raw, usize(rlen))
     slot: usize = usize(h) & c.mask
@@ -2680,7 +2726,7 @@ static inline def refcache_get(c: addr[RefCache], raw: cstr, rlen: u32) -> addr[
 
     should_skip: bool = false
     for i in range(c.n_skips):
-        if strlen(c.skips[i]) == usize(host_len) and memcmp(c.skips[i], host_buf, usize(host_len)) == 0:
+        if skip_pattern_matches(c.skips[i], host_buf, host_len):
             should_skip = true
             break
 
