@@ -1,6 +1,6 @@
 PURA ?= pura
 
-PREFIX ?= $(shell brew --prefix 2>/dev/null || echo /usr/local)
+PREFIX ?= $(if $(wildcard $(HOME)/.local),$(HOME)/.local,/usr/local)
 BINDIR ?= $(DESTDIR)$(PREFIX)/bin
 
 TARGET = logparser
