@@ -1,6 +1,7 @@
 PURA ?= pura
 
-PREFIX ?= $(if $(wildcard $(HOME)/.local),$(HOME)/.local,/usr/local)
+# Install system-wide when run as root (sudo make install), per-user otherwise.
+PREFIX ?= $(if $(filter 0,$(shell id -u)),/usr/local,$(HOME)/.local)
 BINDIR ?= $(DESTDIR)$(PREFIX)/bin
 
 TARGET = logparser

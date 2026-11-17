@@ -4,33 +4,55 @@
 
 Command line parser for common log format (Nginx default).
 
+## Install
+
+### Python
+
+Requires Python 3. Create a virtual environment and install the dependencies:
+
+```shell
+python3 -m venv venv
+source venv/bin/activate
+pip install -U -r requirements.txt
+```
+
+The `venv/` directory is local to the repository. Activate it in each new shell before running `parse.py`, and run `deactivate` to leave it.
+
+### Pura
+
+The native implementation is `logparser.pura`. Build and install it with `make`:
+
+```shell
+make                # compile ./logparser from logparser.pura
+sudo make install   # install to /usr/local/bin (system-wide)
+make install        # install to ~/.local/bin (per-user)
+```
+
+`make install` uses `/usr/local` when run as root and `~/.local` otherwise. Override `PREFIX` or `DESTDIR` as needed, and pass `PURA=/path/to/pura` if the compiler is not on `PATH`. Other targets are `make check`, `make uninstall` and `make clean`.
+
 ## Usage
 
 It counts most important data: referrers, operating systems, browsers and daily unique visitors (IPs). It excludes bots by default.
 
+The examples use `python3 parse.py`; replace it with `logparser` when using the native binary.
+
 ```shell
 # Console output
-python parse.py sitename.log.gz
-python parse.py sitename.log.gz sub.sitename.log.gz
+python3 parse.py sitename.log.gz
+python3 parse.py sitename.log.gz sub.sitename.log.gz
 
 # Hide less than or equal values
-python parse.py sitename.log.gz --hide 1
+python3 parse.py sitename.log.gz --hide 1
 
 # HTML output
-python parse.py sitename.log.gz --page ~/sitename/logs.html
+python3 parse.py sitename.log.gz --html ~/sitename/logs.html
 
 # Ignore hostnames from referrers
-python parse.py sitename.log.gz --skip subreply.com
-python parse.py sitename.log.gz --skip *.subreply.com  # only subdomains
+python3 parse.py sitename.log.gz --skip subreply.com
+python3 parse.py sitename.log.gz --skip *.subreply.com  # only subdomains
 
 # Drop logs older than specified days and rebuild log file
-python parse.py sitename.log.gz --drop 30
-```
-
-Install and update PIP packages.
-
-```shell
-pip install -U -r requirements.txt
+python3 parse.py sitename.log.gz --drop 30
 ```
 
 ## Benchmark
